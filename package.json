@@ -1,0 +1,23 @@
+{
+  "name": "com.halfhumangames.locator",
+  "version": "1.0.0",
+  "displayName": "HHG - Locator",
+  "description": "Hierarchical service locator pattern for Unity",
+  "unity": "2020.3",
+  "unityRelease": "6f1",
+  "documentationUrl": "https://github.com/HalfHumanGames/Locator/blob/main/README.md",
+  "changelogUrl": "https://github.com/HalfHumanGames/Locator/blob/main/CHANGELOG.md",
+  "licensesUrl": "https://github.com/HalfHumanGames/Locator/blob/main/LICENSE",
+  "keywords": [
+    "Service locator",
+    "Design pattern",
+    "Service",
+    "Locator"
+  ],
+  "author": {
+    "name": "Half Human Games",
+    "email": "contact@halfhumangames.com",
+    "url": "https://halfhumangames.com/"
+  },
+  "type": "library"
+}
