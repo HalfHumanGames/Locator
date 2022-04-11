@@ -7,10 +7,19 @@ public class Locator : MonoBehaviour
     public static Locator Global { get; private set; }
 
     public bool IsGlobal;
+    public AutoRegisterMode AutoRegister;
     public Component[] Components;
 
     private Locator parent;
     private Dictionary<Type, object> items = new Dictionary<Type, object>();
+
+    public enum AutoRegisterMode
+    {
+        None,
+        Self,
+        Children,
+        SelfAndChildren
+    }
 
     private void Awake()
     {
@@ -32,13 +41,27 @@ public class Locator : MonoBehaviour
         }
         if (Components != null && Components.Length > 0)
         {
-            for (int i = 0; i < Components.Length; i++)
-            {
-                if (Components[i] != null)
+            RegisterComponents(Components);
+        }
+        switch (AutoRegister)
+        {
+            case AutoRegisterMode.None:
+                break;
+            case AutoRegisterMode.Self:
+                MonoBehaviour[] self = GetComponents<MonoBehaviour>();
+                RegisterComponents(self);
+                break;
+            case AutoRegisterMode.Children:
+                for (int i = 0; i < transform.childCount; i++)
                 {
-                    Register(Components[i]);
+                    MonoBehaviour[] children = transform.GetChild(i).GetComponentsInChildren<MonoBehaviour>();
+                    RegisterComponents(children);
                 }
-            }
+                break;
+            case AutoRegisterMode.SelfAndChildren:
+                MonoBehaviour[] both = GetComponentsInChildren<MonoBehaviour>();
+                RegisterComponents(both);
+                break;
         }
     }
 
@@ -64,6 +87,17 @@ public class Locator : MonoBehaviour
         }
         Debug.LogError($"[Locator] Object of type '{type}' could not be located.", this);
         return default;
+    }
+
+    public void RegisterComponents(Component[] components)
+    {
+        for (int i = 0; i < Components.Length; i++)
+        {
+            if (Components[i] != null)
+            {
+                Register(Components[i]);
+            }
+        }
     }
 
     public void Register(object item)
