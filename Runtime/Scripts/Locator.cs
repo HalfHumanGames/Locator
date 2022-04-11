@@ -7,6 +7,7 @@ public class Locator : MonoBehaviour
     public static Locator Global { get; private set; }
 
     public bool IsGlobal;
+    public bool IsPersistent;
     public AutoRegisterMode AutoRegister;
     public Component[] Components;
 
@@ -28,6 +29,11 @@ public class Locator : MonoBehaviour
             if (Global == null)
             {
                 Global = this;
+
+                if (IsPersistent)
+                {
+                    DontDestroyOnLoad(gameObject);
+                }
             }
             else
             {
