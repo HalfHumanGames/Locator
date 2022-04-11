@@ -41,7 +41,7 @@ public class Locator : MonoBehaviour
         }
         if (Components != null && Components.Length > 0)
         {
-            RegisterComponents(Components);
+            RegisterMany(Components);
         }
         switch (AutoRegister)
         {
@@ -49,18 +49,18 @@ public class Locator : MonoBehaviour
                 break;
             case AutoRegisterMode.Self:
                 MonoBehaviour[] self = GetComponents<MonoBehaviour>();
-                RegisterComponents(self);
+                RegisterMany(self);
                 break;
             case AutoRegisterMode.Children:
                 for (int i = 0; i < transform.childCount; i++)
                 {
                     MonoBehaviour[] children = transform.GetChild(i).GetComponentsInChildren<MonoBehaviour>();
-                    RegisterComponents(children);
+                    RegisterMany(children);
                 }
                 break;
             case AutoRegisterMode.SelfAndChildren:
                 MonoBehaviour[] both = GetComponentsInChildren<MonoBehaviour>();
-                RegisterComponents(both);
+                RegisterMany(both);
                 break;
         }
     }
@@ -89,14 +89,11 @@ public class Locator : MonoBehaviour
         return default;
     }
 
-    public void RegisterComponents(Component[] components)
+    public void RegisterMany(object[] items)
     {
-        for (int i = 0; i < Components.Length; i++)
+        for (int i = 0; i < items.Length; i++)
         {
-            if (Components[i] != null)
-            {
-                Register(Components[i]);
-            }
+            Register(items[i]);
         }
     }
 
