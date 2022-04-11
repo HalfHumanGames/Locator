@@ -7,6 +7,7 @@ public class Locator : MonoBehaviour
     public static Locator Global { get; private set; }
 
     public bool IsGlobal;
+    public Component[] Components;
 
     private Locator parent;
     private Dictionary<Type, object> items = new Dictionary<Type, object>();
@@ -29,9 +30,19 @@ public class Locator : MonoBehaviour
         {
             parent = transform.parent.GetComponentInParent<Locator>();
         }
+        if (Components != null && Components.Length > 0)
+        {
+            for (int i = 0; i < Components.Length; i++)
+            {
+                if (Components[i] != null)
+                {
+                    Register(Components[i]);
+                }
+            }
+        }
     }
 
-    public T Locate<T>() where T : class
+    public T Get<T>() where T : class
     {
         Type type = typeof(T);
         if (items.ContainsKey(type))
@@ -40,7 +51,7 @@ public class Locator : MonoBehaviour
         }
         if (parent != null)
         {
-            T item = parent.Locate<T>();
+            T item = parent.Get<T>();
             if (item != null)
             {
                 return item;
@@ -49,18 +60,27 @@ public class Locator : MonoBehaviour
         }
         if (!IsGlobal)
         {
-            return Global.Locate<T>();
+            return Global.Get<T>();
         }
         Debug.LogError($"[Locator] Object of type '{type}' could not be located.", this);
         return default;
     }
 
-    public void Register<T>(T item) where T : class
+    public void Register(object item)
     {
-        Type type = typeof(T);
+        RegisterAs(item, item.GetType());
+    }
+
+    public void RegisterAs<T>(T item) where T : class
+    {
+        RegisterAs(item, typeof(T));
+    }
+
+    public void RegisterAs(object item, Type type)
+    {
         if (!items.ContainsKey(type))
         {
-            items.Add(typeof(T), item);
+            items.Add(type, item);
         }
         else
         {
@@ -68,9 +88,19 @@ public class Locator : MonoBehaviour
         }
     }
 
-    public void Unregister<T>(T item) where T : class
+    public void Unregister(object item)
     {
-        items.Remove(typeof(T));
+        Unregister(item.GetType());
+    }
+
+    public void Unregister<T>() where T : class
+    {
+        Unregister(typeof(T));
+    }
+
+    public void Unregister(Type type)
+    {
+        items.Remove(type);
     }
 
     public static Locator Find(GameObject gameObject)
@@ -88,5 +118,10 @@ public class Locator : MonoBehaviour
             }
             return Global;
         }
+    }
+
+    public static T GetGlobal<T>() where T : class
+    {
+        return Global != null ? Global.Get<T>() : null;
     }
 }
